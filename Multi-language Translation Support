@@ -1,0 +1,22 @@
+pip install googletrans==4.0.0-rc1
+
+
+from googletrans import Translator
+
+translator = Translator()
+
+def translate_text(text, dest_lang):
+    return translator.translate(text, dest=dest_lang).text
+
+class FAQ(models.Model):
+    question_en = models.TextField()
+    question_hi = models.TextField(blank=True, null=True)
+    question_bn = models.TextField(blank=True, null=True)
+    answer = RichTextField()
+
+    def save(self, *args, **kwargs):
+        if not self.question_hi:
+            self.question_hi = translate_text(self.question_en, 'hi')
+        if not self.question_bn:
+            self.question_bn = translate_text(self.question_en, 'bn')
+        super().save(*args, **kwargs)
